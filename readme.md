@@ -6,11 +6,14 @@
 ### Know the basics:
 Install a package:
 `sudo apt install <package-name>`
+
 Remove a package:
 `sudo apt remove <package-name>`
-Adding the `--purge` option to `apt remove` will remove the package configuration files as well. Use with caution.
+	Adding the `--purge` option to `apt remove` will remove the package configuration files as well. Use with caution.
+
 Update Package Index:
 `sudo apt update`
+
 Upgrade Packages:
 `sudo upgrade`
 
