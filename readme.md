@@ -42,7 +42,7 @@ To update an app which has been suspended from updates, run the command: `sudo a
 ### General Upkeep
 The `apt-mark` command has several useful features for listing installed applications. Type `apt-mark help` for more information. Typing `apt-mark showhold` would reveal which applications are currently prevented from updating when `sudo apt upgrade` is invoked from the command line or automatic Cron tasks. 
 
-## Custom Installation
+### Custom Application Installation
 It's generally preferred to install custom packages in the /opt/ directory. When compiling a package, you are generally prompted to pick an installation directory which you can set to /opt/package-name/. 
 
 In most cases java applications and compiled softwares can live in the /opt/ directory but it's a pain to manually type the paths to those applications
@@ -58,8 +58,57 @@ Update your session path:
 
 ## User Management
 
+### Adding Users
 To add a user the `adduser` command accomplishes the combined tasks of setting passwords and creating a home directory. For most new users, it's best to set a temporary password and have that user set their own password on the first login.
 
 `sudo adduser user1234` Complete the prompts and a new user will have been created.
+
 `sudo adduser user1234 sshlogin` Add new user to the sshlogin group. 
+
 `sudo chage -d 0 user1234` Enforce password change
+
+### Groups
+In most Ubuntu installations there are several configured groups. Running the `groups` command from terminal will display the groups available for users to join. 
+
+In general, if several users will work on a project it's worthwhile to create a new group and assign group permissions to a folder object. 
+
+`sudo addgroup project1` to create the 'project1' group
+
+`sudo adduser user1234 project1` to add user1234 to the new group.
+
+### Group Permissions
+By default, users are created and assigned to the primary group of their own user account. Users can join secondary groups as shown above but they can not join two primary groups. If two users were part of the same secondary group, they could access and edit the same files in an external directory. 
+
+.
+├── bin
+├── boot
+├── data0
+├── data1
+├── data2
+├── data3
+├── data4
+├── data5
+├── dev
+├── etc
+├── home
+├── initrd.img -> boot/initrd.img-4.4.0-116-generic
+├── initrd.img.old -> boot/initrd.img-4.4.0-112-generic
+├── lib
+├── lib64
+├── lost+found
+├── media
+├── mnt
+├── opt
+├── proc
+├── root
+├── run
+├── sbin
+├── scratch
+├── snap
+├── srv
+├── sys
+├── tmp
+├── usr
+├── var
+├── vmlinuz -> boot/vmlinuz-4.4.0-116-generic
+└── vmlinuz.old -> boot/vmlinuz-4.4.0-112-generic
