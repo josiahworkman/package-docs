@@ -68,9 +68,9 @@ To add a user the `adduser` command accomplishes the combined tasks of setting p
 `sudo chage -d 0 user1234` Enforce password change
 
 ### Groups
-In most Ubuntu installations there are several configured groups. Running the `groups` command from terminal will display the groups available for users to join. 
+In most Ubuntu installations there are several configured groups. To get a list of all groups on a system run `less /etc/group`. Running the `groups` command from terminal will display witch groups the current terminal user is currently a member of. 
 
-In general, if several users will work on a project it's worthwhile to create a new group and assign group permissions to a folder object. 
+In general, if several users will work on a project it's worthwhile to create a new group and assign group permissions to a directory object. 
 
 `sudo addgroup project1` to create the 'project1' group
 
@@ -79,36 +79,42 @@ In general, if several users will work on a project it's worthwhile to create a 
 ### Group Permissions
 By default, users are created and assigned to the primary group of their own user account. Users can join secondary groups as shown above but they can not join two primary groups. If two users were part of the same secondary group, they could access and edit the same files in an external directory. 
 
-.
-├── bin
-├── boot
-├── data0
-├── data1
-├── data2
-├── data3
-├── data4
-├── data5
-├── dev
-├── etc
-├── home
-├── initrd.img -> boot/initrd.img-4.4.0-116-generic
-├── initrd.img.old -> boot/initrd.img-4.4.0-112-generic
-├── lib
-├── lib64
-├── lost+found
-├── media
-├── mnt
-├── opt
-├── proc
-├── root
-├── run
-├── sbin
-├── scratch
-├── snap
-├── srv
-├── sys
-├── tmp
-├── usr
-├── var
-├── vmlinuz -> boot/vmlinuz-4.4.0-116-generic
-└── vmlinuz.old -> boot/vmlinuz-4.4.0-112-generic
+The table below is a theoretical list of mounting points on a Ubuntu system. Bin is a system created point, data0 and data1 are additional points created manually. 
+
+| Mount Point   | Permissions   | User Owner  | Group Owner |
+| ------------- |-------------- | ----------- |------------ |
+| bin           | drwxr-xr-x    | root        | root		|
+| data0     	| drwxrwsr-x    | root        |	project0	|
+| data1		 	| drwxrwsrwx    | root        |	project1	|
+
+In the table above, you'll notice the permissions for data0/data1 differ from the bin directory. Both data0/data1 directories have had group owners set explicitly. In addition the drwxrwsr-x permissions tell us that the group setgid has been enabled on this directory. With the setgid bit enabled, executable files with this bit set will run with effective gid set to the gid of the file owner - in this case the group owner is included. Google linux permissions and setgid to gain a better understanding of the concept. In sum, we can set permissions on a directory so that anyone within a group can edit and view the same files. 
+
+In the example above, users within project0 have read write execute permissions within data0. As long as a user is in the group project0, they can create, edit and delete files and folders within data0. 
+
+By contrast, data1 has been set with 755 permissions, anyone, regardless of their group affiliation has access to read, write and execute data here. data1 is also set with the setgid under the group category, any user within the group project1 can read write and execute files and folders within data1. 
+
+There are several ways to setup a directory, they are easier to setup before data is dumped into the directory. Plan ahead of time. 
+
+Before diving out access to a folder consider the following. Who requires access? Should this be restricted? 
+
+If we were to setup data2 in on this theoretical server I might create a new group for the owners of that data. If the data is to be accessed by many users, it might still make sense to create a project2 group to help associate the data with it's respective project. 
+
+All that said, most of these data folders are setup on the real server. Changing the permissions to reflect group ownership should be the last task before use.
+
+### Change Ownership & Setting setgid Bit
+Once you've identified a directory and group changing permissions can be accomplished using the `chown` & `chmod` commands. 
+
+**Change Ownership** `sudo chown -R :mySwellGroup /myAmazingFolder` this would change the group ownership on the 'myAmazingFolder' directory to 'mySwellGroup'
+
+**setgid bit** `sudo chmod 2775 /myAmazingFolder` to setup the setgid bit on this directory. Note: You've probably seen `chmod 755 foo` before. The 2 preceding the 755 essentially enforces inheritance - Any files or subdirectories in 'myAmazingFolder' will inherit the group id (mySwellGroup).
+
+Without setting this bit, files and directory within a directory would be owned by each user creating files or directories. Enforcing inheritance and groups should help keep things organized. 
+
+### Mass edit permissions
+To edit the permissions of many objects the `find` command can be used in tandem with `-exec` command option. If you wanted to set inheritance on a directory, you would need to change the existing files and folders in that directory first. 
+
+`find /data1 -type d -exec chmod 775 {} \;` search for everything within /data1 and identify directories then execute chmod to change their permissions.
+
+`find /data1 -type f -exec chmod 664 {} \;` search for everything within /data1 and identify files then execute chmod to change their permissions. 
+
+After recursively setting those permissions, you could then set the ownership and setgid bits to enable inheritance for future files. 
