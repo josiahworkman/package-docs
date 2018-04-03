@@ -1,6 +1,6 @@
-# Installing Apps on Ubuntu
+# Managing Ubuntu Server 16.04 Overview
 
-## APT
+## Installing Packages with APT
 [APT Package Manager](https://help.ubuntu.com/lts/serverguide/apt.html "Apt Ubuntu Documentation") is a command line package manager with numerous functions to track, update and manage applications on the Unix operating systems. 
 
 ### Know the basics:
@@ -55,3 +55,11 @@ Alias:
 
 Update your session path:
 `source ~/.profile`
+
+## User Management
+
+To add a user the `adduser` command accomplishes the combined tasks of setting passwords and creating a home directory. For most new users, it's best to set a temporary password and have that user set their own password on the first login.
+
+`sudo adduser user1234` Complete the prompts and a new user will have been created.
+`sudo adduser user1234 sshlogin` Add new user to the sshlogin group. 
+`sudo chage -d 0 user1234` Enforce password change
