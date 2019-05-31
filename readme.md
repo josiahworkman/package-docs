@@ -1,4 +1,4 @@
-# Managing Ubuntu Server 16.04 Overview
+deleting# Managing Ubuntu Server
 
 ## Installing Packages with APT
 [APT Package Manager](https://help.ubuntu.com/lts/serverguide/apt.html "Apt Ubuntu Documentation") is a command line package manager with numerous functions to track, update and manage applications on the Unix operating systems.
@@ -79,6 +79,15 @@ To add a user the `adduser` command accomplishes the combined tasks of setting p
 `sudo adduser user1234 sshlogin` Add new user to the sshlogin group.
 
 `sudo chage -d 0 user1234` Enforce password change
+
+### Removing users
+To remove a user fist consider the implication of doing so. the [`userdel [OPTIONS] USERNAME`](https://linux.die.net/man/8/userdel) command is often used to manage this task.
+
+`userdel USERNAME` would delete the user account from the system. This would also delete the primary group USERNAME associated with that user unless another user was added to that group.
+
+`userdel -r USERNAME` forces userdel to remove the user's home directory and mail spool.
+
+`sudo killall -u USERNAME` kills all of USERNAME's running processes. This is a useful command to run before deleteing a user. Killing all running processes assigned to the to-be-deleted user should ensure a successful removal. `userdel -f username` also accomplishes this task. 
 
 ### Groups
 In most Ubuntu installations there are several configured groups. To get a list of all groups on a system run `less /etc/group`. Running the `groups` command from terminal will display witch groups the current terminal user is currently a member of.
